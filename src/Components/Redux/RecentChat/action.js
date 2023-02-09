@@ -1,3 +1,4 @@
+import axios from "axios";
 import { selectChat } from "../Chatting/action";
 export const RECENT_LOADING = "RECENT_LOADING";
 export const RECENT_ERROR = "RECENT_ERROR";
@@ -19,12 +20,8 @@ export const makeRecentChatApi = (token) => async (dispatch) => {
   recentLoding(true);
   const url = `https://messenger-clo.herokuapp.com/chat`;
   try {
-    let res = await fetch(url, {
+    let res = await axios(url, {
       method: "get",
-      headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
     });
     let data = await res.json();
     dispatch(recentChatResult(data));

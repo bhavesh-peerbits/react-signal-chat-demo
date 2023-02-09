@@ -15,7 +15,7 @@ import { ColorButton } from "./Auth/Login";
 import { TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { makeSearchApi } from "./Redux/Searching/action";
-import { SearchUserComp } from "./MyChat";
+// import { SearchUserComp } from "./MyChat";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { makeNewGroup } from "./Redux/RecentChat/action";
@@ -202,7 +202,7 @@ export default function CustomizedDialogs() {
                     handleaddingofUser(el);
                   }}
                 >
-                  <SearchUserComp {...el} />
+                  {/* <SearchUserComp {...el} /> */}
                 </div>
               ))}
           </div>

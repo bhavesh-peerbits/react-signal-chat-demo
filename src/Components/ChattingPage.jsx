@@ -12,21 +12,134 @@ import { ChatlogicStyling, isSameSender } from "./ChatstyleLogic";
 import { sendMessageApi } from "./Redux/Chatting/action";
 import { addUnseenmsg } from "./Redux/Notification/action";
 import { HubConnectionBuilder } from "@microsoft/signalr";
+import { messageReceived, sendMessageApiAsync } from "./Redux/Chatting/ChattingNew/action1";
 
 
 
 export const ChattingPage = () => {
   const [connection, setConnection] = useState(null);
-  const [chat, setChat] = useState<([]);
+  console.log("connection:",connection)
+  const [chat, setChat] = useState([]);
   const latestChat = useRef(null);
   const { user, token } = useSelector((store) => store.user);
-  const { messages } = useSelector((store) => store.chatting);
+  // const { messages } = useSelector((store) => store.chatting);
+  const messages = [
+    {
+        id: 18,
+        content: "Hello guys, how are you doing?",
+        timestamp: "2023-02-09T05:29:06.4955229+00:00",
+        fromUserName: "admin2",
+        fromFullName: "Maria Nikolaou",
+        room: "Lobby",
+        avatar: "avatar2.jpg"
+    },
+    {
+        id: 19,
+        content: "Good, and you?",
+        timestamp: "2023-02-09T05:29:07.4955229+00:00",
+        fromUserName: "admin",
+        fromFullName: "James Smith",
+        room: "Lobby",
+        avatar: "avatar1.jpg"
+    },
+    {
+        id: 20,
+        content: "I'm good ",
+        timestamp: "2023-02-09T05:29:08.4955229+00:00",
+        fromUserNam: "admin2",
+        fromFullName: "Maria Nikolaou",
+    room: "Lobby",
+        avatar: "avatar2.jpg"
+    },
+     {
+        id: 21,
+        content: "Where are you",
+        timestamp: "2023-02-09T05:29:09.4955229+00:00",
+        fromUserName: "admin",
+        fromFullName: "James Smith",
+        room: "Lobby",
+        avatar: "avatar1.jpg"
+    },
+     {
+        id: 22,
+        content: "At coffee shop",
+        timestamp: "2023-02-09T05:29:15.4955229+00:00",
+        fromUserName: "admin2",
+        fromFullName: "Maria Nikolaou",
+        room: "Lobby",
+        avatar: "avatar2.jpg"
+    },
+      {
+        id: 23,
+        content: "ohh great",
+        timestamp: "2023-02-09T05:29:16.4955229+00:00",
+        fromUserName: "admin",
+        fromFullName: "James Smith",
+        room: "Lobby",
+        avatar: "avatar1.jpg"
+    },
+    {
+      id: 24,
+      content: "Hello guys, how are you doing?",
+      timestamp: "2023-02-09T05:29:06.4955229+00:00",
+      fromUserName: "admin2",
+      fromFullName: "Maria Nikolaou",
+      room: "Lobby",
+      avatar: "avatar2.jpg"
+  },
+  {
+      id: 25,
+      content: "Good, and you?",
+      timestamp: "2023-02-09T05:29:07.4955229+00:00",
+      fromUserName: "admin",
+      fromFullName: "James Smith",
+      room: "Lobby",
+      avatar: "avatar1.jpg"
+  },
+  {
+      id: 26,
+      content: "I'm good ",
+      timestamp: "2023-02-09T05:29:08.4955229+00:00",
+      fromUserNam: "admin2",
+      fromFullName: "Maria Nikolaou",
+  room: "Lobby",
+      avatar: "avatar2.jpg"
+  },
+   {
+      id: 27,
+      content: "Where are you",
+      timestamp: "2023-02-09T05:29:09.4955229+00:00",
+      fromUserName: "admin",
+      fromFullName: "James Smith",
+      room: "Lobby",
+      avatar: "avatar1.jpg"
+  },
+   {
+      id: 28,
+      content: "At coffee shop",
+      timestamp: "2023-02-09T05:29:15.4955229+00:00",
+      fromUserName: "admin2",
+      fromFullName: "Maria Nikolaou",
+      room: "Lobby",
+      avatar: "avatar2.jpg"
+  },
+    {
+      id: 29,
+      content: "ohh great",
+      timestamp: "2023-02-09T05:29:16.4955229+00:00",
+      fromUserName: "admin",
+      fromFullName: "James Smith",
+      room: "Lobby",
+      avatar: "avatar1.jpg"
+  }
+
+]
   var { unseenmsg } = useSelector((store) => store.notification);
   const {
     chatting: {
       isGroupChat,
       chatName,
-      user: { pic, name },
+      // user: { pic, name },
       _id,
     },
   } = useSelector((store) => store.chatting);
@@ -44,6 +157,7 @@ export const ChattingPage = () => {
       .withUrl("http://192.168.1.56:86/chatHub")
       .build();
     setConnection(newConnection);
+    
   }, []);
 
   // useEffect(() => {
@@ -65,25 +179,27 @@ export const ChattingPage = () => {
   //     if (!currentChattingWith || currentChattingWith !== newMessage.chat._id) {
   //       handleNotyfy(newMessage);
   //     } else {
-  //       dispatch(sendMessage(newMessage));
+  //       dispatch(sendMessage(newMessage)); messageReceived
   //     }
   //   });
   // }, []);
+
+
   useEffect(() => {
     if (connection) {
       connection
         .start()
         .then((result) => {
           console.log("Connected!");
-          connection.on("ReceiveMessage", (message) => {
-            const updatedChat = [...latestChat.current];
-            updatedChat.push(message);
-            setChat(updatedChat);
+          connection.on("newMessage", (newMessage) => {
+            dispatch(messageReceived(newMessage)); 
+
           });
         })
         .catch((e) => console.log("Connection failed: ", e));
     }
   }, [connection]);
+  
   const handleNotyfy = (newMessage) => {
     dispatch(addUnseenmsg(newMessage));
   };
@@ -91,8 +207,8 @@ export const ChattingPage = () => {
     <div className="chattingpage">
       <div className="top-header">
         <div className="user-header">
-          <Avatar src={isGroupChat ? "" : pic} />
-          <p className="user-name">{isGroupChat ? chatName : name}</p>
+          <Avatar src={isGroupChat ? "" : "pic"} />
+          {/* <p className="user-name">{isGroupChat ? chatName : name}</p> */}
         </div>
         <div>
           <div className="user-fet">
@@ -108,38 +224,40 @@ export const ChattingPage = () => {
           <div
             key={index}
             className={
-              el.sender._id != user._id ? "rihgtuser-chat" : "leftuser-chat"
+              el.fromUserName != 'admin' ? "rihgtuser-chat" : "leftuser-chat"
             }
           >
             <div
-              className={el.sender._id != user._id ? "right-avt" : "left-avt"}
+              className={el.fromUserName != "admin" ? "right-avt" : "left-avt"}
             >
-              <div className={ChatlogicStyling(el.sender._id, user._id)}>
+              <div className={ChatlogicStyling(el.fromUserName, 'admin')}>
                 <p>{el.content}</p>
                 <p className="time chat-time">
-                  {new Date(el.createdAt).getHours() +
+                  {new Date(el.timestamp).getHours() +
                     ":" +
-                    new Date(el.createdAt).getMinutes()}
+                    new Date(el.timestamp).getMinutes()}
                 </p>
               </div>
-
+{/* 
               {isSameSender(messages, index) ? (
                 <Avatar
-                  src={el.sender._id != user._id ? el.sender.pic : user.pic}
+                  // src={el.sender._id != user._id ? el.sender.pic : user.pic}
+                    src={el.fromUserName != "admin2" ? "el.sender.pic" : "user.pic"}
                 />
               ) : (
                 <div className="blank-div"></div>
-              )}
+              )} */}
             </div>
           </div>
         ))}
       </div>
       <div className="sender-cont">
-        <InputContWithEmog id={_id} token={token} socket={connection} />
+        <InputContWithEmog id={_id} token={token} connection={connection} />
       </div>
     </div>
   );
 };
+
 const ColorButton = styled(Button)(() => ({
   color: "white",
   fontSize: "20px",
@@ -151,31 +269,28 @@ const ColorButton = styled(Button)(() => ({
     backgroundColor: "#3a45c3",
   },
 }));
-function InputContWithEmog({ id, token, socket }) {
+function InputContWithEmog({ id, token, connection }) {
   const [text, setText] = useState("");
   const dispatch = useDispatch();
 
   function handleOnEnter(text) {
+
     dispatch(
-      sendMessageApi(
-        {
-          content: text,
-          chatId: id,
-        },
-        token,
-        socket
-      )
+      sendMessageApiAsync(
+        id,
+        "receiverId",
+        text,
+         connection      )
     );
   }
   function handleChatClick() {
+
     dispatch(
-      sendMessageApi(
-        {
-          content: text,
-          chatId: id,
-        },
-        token,
-        socket
+      sendMessageApiAsync(
+       id,
+       "receiverId",
+       text,
+        connection
       )
     );
     setText("");

@@ -10,7 +10,11 @@ import { useSelector } from "react-redux";
 import { accessChat, makeRecentChatApi } from "./Redux/RecentChat/action";
 import { selectChat } from "./Redux/Chatting/action";
 import { removeSeenMsg } from "./Redux/Notification/action";
+import { getRoomListAsync } from "./Redux/RecentChat/RecentChatNew/action1";
+import { fetchCurrentMessagesAsync } from "./Redux/Chatting/ChattingNew/action1";
+
 export const MyChat = () => {
+
   const [search, setSearch] = useState(false);
   const { search_result, loading, error } = useSelector(
     (store) => store.search
@@ -18,30 +22,47 @@ export const MyChat = () => {
   const { recent_chat, loading: chat_loading } = useSelector(
     (store) => store.recentChat
   );
+  const recent_chat_one = useSelector((store) => store?.recentChatOne?.recent_chat) 
   const { user, token } = useSelector((store) => store.user);
   const { chatting } = useSelector((store) => store.chatting);
   const { notification, unseenmsg } = useSelector(
     (store) => store.notification
   );
   const dispatch = useDispatch();
+
   useEffect(() => {
-    if (token) dispatch(makeRecentChatApi(token));
-  }, [user]);
-  const ref = useRef();
-  const handleQuery = (e) => {
-    let id;
-    return function (e) {
-      if (!e.target.value) {
-        setSearch(false);
-        return;
-      }
-      if (ref.current) clearTimeout(ref.current);
-      setSearch(true);
-      ref.current = setTimeout(() => {
-        dispatch(makeSearchApi(e.target.value));
-      }, 1000);
-    };
-  };
+    dispatch(getRoomListAsync());
+  }, []);
+ 
+
+  // const ref = useRef();
+  // const handleQuery = (e) => {
+  //   let id;
+  //   return function (e) {
+  //     if (!e.target.value) {
+  //       setSearch(false);
+  //       return;
+  //     }
+  //     if (ref.current) clearTimeout(ref.current);
+  //     setSearch(true);
+  //     ref.current = setTimeout(() => {
+  //       dispatch(makeSearchApi(e.target.value));
+  //     }, 1000);
+  //   };
+  // };
+
+// const recent_chat1 = [
+//   {
+//     id: 17,
+//     name: "Lobby",
+//     admin: "admin"
+// },
+// {
+//   id: 18,
+//   name: "Marketing",
+//   admin: "admin"
+// }
+// ]
 
   return (
     <div className="mychat-cont">
@@ -50,23 +71,23 @@ export const MyChat = () => {
           <h2>Chats</h2>
           {/* <NotificationsIcon /> */}
           <Badge badgeContent={notification} color="error">
-            <Notificationcomp />
+            {/* <Notificationcomp /> */}
           </Badge>
           {/* <AddIcon /> */}
         </div>
-        <div className="search-cont">
+        {/* <div className="search-cont">
           <SearchIcon />
           <input
             onChange={handleQuery()}
             type="text"
             placeholder="Search users"
           />
-        </div>
+        </div> */}
       </div>
       <div className="recent-chat">
         <p className="Recent">Recent</p>
         <div className="recent-user">
-          {search
+          {/* {search
             ? search_result.map((el) => (
                 <SearchUserComp
                   key={el._id}
@@ -76,7 +97,8 @@ export const MyChat = () => {
                   setSearch={setSearch}
                 />
               ))
-            : !chat_loading &&
+            : !
+            chat_loading &&
               recent_chat.map((el, index) => (
                 <ChatUserComp
                   key={el._id}
@@ -85,6 +107,17 @@ export const MyChat = () => {
                   chattingwith={chatting._id}
                   id={user._id}
                 />
+              ))} */}
+              { chat_loading &&
+              recent_chat_one.map((el, index) => (
+                <ChatUserComp
+                  key={el.id}
+                  {...el}
+                  index={index}
+                  roomName={el.name}
+                  admin={el.admin}
+                  id={el.id}
+                />
               ))}
         </div>
       </div>
@@ -92,82 +125,90 @@ export const MyChat = () => {
   );
 };
 
-export default function Notificationcomp() {
-  const { unseenmsg } = useSelector((store) => store.notification);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const dispatch = useDispatch();
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+// export default function Notificationcomp() {
+//   const { unseenmsg } = useSelector((store) => store.notification);
 
-  const handleClose = () => {
-    setAnchorEl(null);
-    if (unseenmsg.length !== 0) dispatch(removeSeenMsg([]));
-  };
+//   const [anchorEl, setAnchorEl] = useState(null);
+//   const dispatch = useDispatch();
+//   const handleClick = (event) => {
+//     setAnchorEl(event.currentTarget);
+//   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+//   const handleClose = () => {
+//     setAnchorEl(null);
+//     if (unseenmsg.length !== 0) dispatch(removeSeenMsg([]));
+//   };
 
-  return (
-    <div>
-      <NotificationsIcon aria-describedby={id} onClick={handleClick} />
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-      >
-        {!unseenmsg.length ? (
-          <Typography sx={{ p: 2, width: 170 }}>No new messages.</Typography>
-        ) : (
-          unseenmsg.map((el, index) => (
-            <Typography key={index} sx={{ p: 2, width: 170 }}>
-              {el.sender.name + " " + el.content.substring(0, 15) + "..."}
-            </Typography>
-          ))
-        )}
-      </Popover>
-    </div>
-  );
-}
+//   const open = Boolean(anchorEl);
+//   const id = open ? "simple-popover" : undefined;
+
+//   return (
+//     <div>
+//       <NotificationsIcon aria-describedby={id} onClick={handleClick} />
+//       <Popover
+//         id={id}
+//         open={open}
+//         anchorEl={anchorEl}
+//         onClose={handleClose}
+//         anchorOrigin={{
+//           vertical: "bottom",
+//           horizontal: "left",
+//         }}
+//       >
+//         {!unseenmsg.length ? (
+//           <Typography sx={{ p: 2, width: 170 }}>No new messages.</Typography>
+//         ) : (
+//           unseenmsg.map((el, index) => (
+//             <Typography key={index} sx={{ p: 2, width: 170 }}>
+//               {el.name}
+//               {/* {el.sender.name + " " + el.content.substring(0, 15) + "..."} */}
+//             </Typography>
+//           ))
+//         )}
+//       </Popover>
+//     </div>
+//   );
+// }
+
 const ChatUserComp = ({
-  isGroupChat,
-  chatName,
-  users,
-  latestMessage,
+  // isGroupChat,
+  // chatName,
+  // users,
+  // latestMessage,
   id,
-  _id,
+  admin,
+  // _id,
   index,
-  chattingwith,
+  roomName,
 }) => {
   const dispatch = useDispatch();
+
   const handleSelectChat = () => {
-    dispatch(
-      selectChat({
-        isGroupChat,
-        index,
-        user: users.find((el) => el._id != id),
-        _id,
-        chatName,
-      })
-    );
+    // dispatch(
+    //   selectChat({
+    //     isGroupChat,
+    //     index,
+    //     user: users.find((el) => el._id != id),
+    //     _id,
+    //     chatName,
+    //   })
+    // );
+    dispatch(fetchCurrentMessagesAsync(id))
   };
   return (
     <div
       onClick={handleSelectChat}
-      className={chattingwith == _id ? "user selectUser" : "user"}
+      // className={chattingwith == _id ? "user selectUser" : "user"}
     >
-      <div className="history-cont">
-        {isGroupChat ? (
+      <div >
+      <p className="Recent"># {roomName}</p>
+        
+        {/* {isGroupChat ? (
           <div>{<Avatar>G</Avatar>}</div>
         ) : (
           <div>{<Avatar src={users.find((el) => el._id != id)?.pic} />}</div>
-        )}
-        <div>
+        )} */}
+        {/* <div>
           {isGroupChat ? (
             <p className="name">{chatName}</p>
           ) : (
@@ -180,9 +221,9 @@ const ChatUserComp = ({
                 : latestMessage.content
               : ""}
           </p>
-        </div>
+        </div> */}
       </div>
-      <div>
+      {/* <div>
         {latestMessage ? (
           <p className="time">
             {new Date(latestMessage?.updatedAt).getHours() +
@@ -192,35 +233,35 @@ const ChatUserComp = ({
         ) : (
           ""
         )}
-        {/* <p className="unseen-chat">5</p> */}
-      </div>
+      //  <p className="unseen-chat">5</p>
+      </div> */}
     </div>
   );
 };
 
-export const SearchUserComp = ({
-  _id,
-  email,
-  name,
-  pic,
-  token,
-  recent_chat,
-  setSearch,
-}) => {
-  const dispatch = useDispatch();
-  const handleSubmitForAcceChat = () => {
-    dispatch(accessChat(_id, token, recent_chat));
-    setSearch(false);
-  };
-  return (
-    <div onClick={handleSubmitForAcceChat} className="user">
-      <div className="history-cont">
-        <div>{<Avatar src={pic} />}</div>
-        <div>
-          <p className="name">{name}</p>
-          <p className="chat">Email: {email}</p>
-        </div>
-      </div>
-    </div>
-  );
-};
+// export const SearchUserComp = ({
+//   _id,
+//   email,
+//   name,
+//   pic,
+//   token,
+//   recent_chat,
+//   setSearch,
+// }) => {
+//   const dispatch = useDispatch();
+//   const handleSubmitForAcceChat = () => {
+//     dispatch(accessChat(_id, token, recent_chat));
+//     setSearch(false);
+//   };
+//   return (
+//     <div onClick={handleSubmitForAcceChat} className="user">
+//       <div className="history-cont">
+//         <div>{<Avatar src={pic} />}</div>
+//         <div>
+//           <p className="name">{name}</p>
+//           <p className="chat">Email: {email}</p>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
