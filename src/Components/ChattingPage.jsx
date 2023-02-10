@@ -4,7 +4,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import SearchIcon from "@mui/icons-material/Search";
 import SendIcon from "@mui/icons-material/Send";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, IconButton, Menu, MenuItem } from "@mui/material";
 import React, { createRef, useEffect, useRef, useState } from "react";
 import InputEmoji from "react-input-emoji";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,128 +12,147 @@ import { ChatlogicStyling, isSameSender } from "./ChatstyleLogic";
 import { sendMessageApi } from "./Redux/Chatting/action";
 import { addUnseenmsg } from "./Redux/Notification/action";
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import { messageReceived, sendMessageApiAsync } from "./Redux/Chatting/ChattingNew/action1";
-
-
+import {
+  deleteGroupMessageAsync,
+  messageReceived,
+  sendMessageApiAsync,
+} from "./Redux/Chatting/ChattingNew/action1";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 export const ChattingPage = () => {
   const [connection, setConnection] = useState(null);
-  console.log("connection:",connection)
   const [chat, setChat] = useState([]);
   const latestChat = useRef(null);
   const { user, token } = useSelector((store) => store.user);
   // const { messages } = useSelector((store) => store.chatting);
-  const messages = [
-    {
-        id: 18,
-        content: "Hello guys, how are you doing?",
-        timestamp: "2023-02-09T05:29:06.4955229+00:00",
-        fromUserName: "admin2",
-        fromFullName: "Maria Nikolaou",
-        room: "Lobby",
-        avatar: "avatar2.jpg"
-    },
-    {
-        id: 19,
-        content: "Good, and you?",
-        timestamp: "2023-02-09T05:29:07.4955229+00:00",
-        fromUserName: "admin",
-        fromFullName: "James Smith",
-        room: "Lobby",
-        avatar: "avatar1.jpg"
-    },
-    {
-        id: 20,
-        content: "I'm good ",
-        timestamp: "2023-02-09T05:29:08.4955229+00:00",
-        fromUserNam: "admin2",
-        fromFullName: "Maria Nikolaou",
-    room: "Lobby",
-        avatar: "avatar2.jpg"
-    },
-     {
-        id: 21,
-        content: "Where are you",
-        timestamp: "2023-02-09T05:29:09.4955229+00:00",
-        fromUserName: "admin",
-        fromFullName: "James Smith",
-        room: "Lobby",
-        avatar: "avatar1.jpg"
-    },
-     {
-        id: 22,
-        content: "At coffee shop",
-        timestamp: "2023-02-09T05:29:15.4955229+00:00",
-        fromUserName: "admin2",
-        fromFullName: "Maria Nikolaou",
-        room: "Lobby",
-        avatar: "avatar2.jpg"
-    },
-      {
-        id: 23,
-        content: "ohh great",
-        timestamp: "2023-02-09T05:29:16.4955229+00:00",
-        fromUserName: "admin",
-        fromFullName: "James Smith",
-        room: "Lobby",
-        avatar: "avatar1.jpg"
-    },
-    {
-      id: 24,
-      content: "Hello guys, how are you doing?",
-      timestamp: "2023-02-09T05:29:06.4955229+00:00",
-      fromUserName: "admin2",
-      fromFullName: "Maria Nikolaou",
-      room: "Lobby",
-      avatar: "avatar2.jpg"
-  },
-  {
-      id: 25,
-      content: "Good, and you?",
-      timestamp: "2023-02-09T05:29:07.4955229+00:00",
-      fromUserName: "admin",
-      fromFullName: "James Smith",
-      room: "Lobby",
-      avatar: "avatar1.jpg"
-  },
-  {
-      id: 26,
-      content: "I'm good ",
-      timestamp: "2023-02-09T05:29:08.4955229+00:00",
-      fromUserNam: "admin2",
-      fromFullName: "Maria Nikolaou",
-  room: "Lobby",
-      avatar: "avatar2.jpg"
-  },
-   {
-      id: 27,
-      content: "Where are you",
-      timestamp: "2023-02-09T05:29:09.4955229+00:00",
-      fromUserName: "admin",
-      fromFullName: "James Smith",
-      room: "Lobby",
-      avatar: "avatar1.jpg"
-  },
-   {
-      id: 28,
-      content: "At coffee shop",
-      timestamp: "2023-02-09T05:29:15.4955229+00:00",
-      fromUserName: "admin2",
-      fromFullName: "Maria Nikolaou",
-      room: "Lobby",
-      avatar: "avatar2.jpg"
-  },
-    {
-      id: 29,
-      content: "ohh great",
-      timestamp: "2023-02-09T05:29:16.4955229+00:00",
-      fromUserName: "admin",
-      fromFullName: "James Smith",
-      room: "Lobby",
-      avatar: "avatar1.jpg"
-  }
+  const { messages, roomData, chatting } = useSelector(
+    (store) => store.chattingOne
+  );
+  console.log("messages", messages);
+  const UserID = localStorage.getItem("UserID");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleDeleteGroupMessage = (messageId, senderId) => {
+    dispatch(deleteGroupMessageAsync(messageId, senderId));
+    setAnchorEl(null);
+  };
+  //   const messages = [
+  //     {
+  //         id: 18,
+  //         content: "Hello guys, how are you doing?",
+  //         timestamp: "2023-02-09T05:29:06.4955229+00:00",
+  //         fromUserName: "admin2",
+  //         fromFullName: "Maria Nikolaou",
+  //         room: "Lobby",
+  //         avatar: "avatar2.jpg"
+  //     },
+  //     {
+  //         id: 19,
+  //         content: "Good, and you?",
+  //         timestamp: "2023-02-09T05:29:07.4955229+00:00",
+  //         fromUserName: "admin",
+  //         fromFullName: "James Smith",
+  //         room: "Lobby",
+  //         avatar: "avatar1.jpg"
+  //     },
+  //     {
+  //         id: 20,
+  //         content: "I'm good ",
+  //         timestamp: "2023-02-09T05:29:08.4955229+00:00",
+  //         fromUserNam: "admin2",
+  //         fromFullName: "Maria Nikolaou",
+  //     room: "Lobby",
+  //         avatar: "avatar2.jpg"
+  //     },
+  //      {
+  //         id: 21,
+  //         content: "Where are you",
+  //         timestamp: "2023-02-09T05:29:09.4955229+00:00",
+  //         fromUserName: "admin",
+  //         fromFullName: "James Smith",
+  //         room: "Lobby",
+  //         avatar: "avatar1.jpg"
+  //     },
+  //      {
+  //         id: 22,
+  //         content: "At coffee shop",
+  //         timestamp: "2023-02-09T05:29:15.4955229+00:00",
+  //         fromUserName: "admin2",
+  //         fromFullName: "Maria Nikolaou",
+  //         room: "Lobby",
+  //         avatar: "avatar2.jpg"
+  //     },
+  //       {
+  //         id: 23,
+  //         content: "ohh great",
+  //         timestamp: "2023-02-09T05:29:16.4955229+00:00",
+  //         fromUserName: "admin",
+  //         fromFullName: "James Smith",
+  //         room: "Lobby",
+  //         avatar: "avatar1.jpg"
+  //     },
+  //     {
+  //       id: 24,
+  //       content: "Hello guys, how are you doing?",
+  //       timestamp: "2023-02-09T05:29:06.4955229+00:00",
+  //       fromUserName: "admin2",
+  //       fromFullName: "Maria Nikolaou",
+  //       room: "Lobby",
+  //       avatar: "avatar2.jpg"
+  //   },
+  //   {
+  //       id: 25,
+  //       content: "Good, and you?",
+  //       timestamp: "2023-02-09T05:29:07.4955229+00:00",
+  //       fromUserName: "admin",
+  //       fromFullName: "James Smith",
+  //       room: "Lobby",
+  //       avatar: "avatar1.jpg"
+  //   },
+  //   {
+  //       id: 26,
+  //       content: "I'm good ",
+  //       timestamp: "2023-02-09T05:29:08.4955229+00:00",
+  //       fromUserNam: "admin2",
+  //       fromFullName: "Maria Nikolaou",
+  //   room: "Lobby",
+  //       avatar: "avatar2.jpg"
+  //   },
+  //    {
+  //       id: 27,
+  //       content: "Where are you",
+  //       timestamp: "2023-02-09T05:29:09.4955229+00:00",
+  //       fromUserName: "admin",
+  //       fromFullName: "James Smith",
+  //       room: "Lobby",
+  //       avatar: "avatar1.jpg"
+  //   },
+  //    {
+  //       id: 28,
+  //       content: "At coffee shop",
+  //       timestamp: "2023-02-09T05:29:15.4955229+00:00",
+  //       fromUserName: "admin2",
+  //       fromFullName: "Maria Nikolaou",
+  //       room: "Lobby",
+  //       avatar: "avatar2.jpg"
+  //   },
+  //     {
+  //       id: 29,
+  //       content: "ohh great",
+  //       timestamp: "2023-02-09T05:29:16.4955229+00:00",
+  //       fromUserName: "admin",
+  //       fromFullName: "James Smith",
+  //       room: "Lobby",
+  //       avatar: "avatar1.jpg"
+  //   }
 
-]
+  // ]
   var { unseenmsg } = useSelector((store) => store.notification);
   const {
     chatting: {
@@ -154,10 +173,9 @@ export const ChattingPage = () => {
   // }, []);
   useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl("http://192.168.1.56:86/chatHub")
+      .withUrl("http://192.168.1.56:81/chatHub")
       .build();
     setConnection(newConnection);
-    
   }, []);
 
   // useEffect(() => {
@@ -184,7 +202,6 @@ export const ChattingPage = () => {
   //   });
   // }, []);
 
-
   useEffect(() => {
     if (connection) {
       connection
@@ -192,14 +209,13 @@ export const ChattingPage = () => {
         .then((result) => {
           console.log("Connected!");
           connection.on("newMessage", (newMessage) => {
-            dispatch(messageReceived(newMessage)); 
-
+            dispatch(messageReceived(newMessage));
           });
         })
         .catch((e) => console.log("Connection failed: ", e));
     }
   }, [connection]);
-  
+
   const handleNotyfy = (newMessage) => {
     dispatch(addUnseenmsg(newMessage));
   };
@@ -208,7 +224,7 @@ export const ChattingPage = () => {
       <div className="top-header">
         <div className="user-header">
           <Avatar src={isGroupChat ? "" : "pic"} />
-          {/* <p className="user-name">{isGroupChat ? chatName : name}</p> */}
+          <p className="user-name">{roomData?.roomName || ""}</p>
         </div>
         <div>
           <div className="user-fet">
@@ -220,25 +236,58 @@ export const ChattingPage = () => {
         </div>
       </div>
       <div ref={scrolldiv} className="live-chat">
-        {messages.map((el, index) => (
-          <div
-            key={index}
-            className={
-              el.fromUserName != 'admin' ? "rihgtuser-chat" : "leftuser-chat"
-            }
-          >
+        {chatting?.map((el, index) => (
+          <>
             <div
-              className={el.fromUserName != "admin" ? "right-avt" : "left-avt"}
+              key={index}
+              className={
+                el.senderID != UserID ? "rihgtuser-chat" : "leftuser-chat"
+              }
             >
-              <div className={ChatlogicStyling(el.fromUserName, 'admin')}>
-                <p>{el.content}</p>
-                <p className="time chat-time">
-                  {new Date(el.timestamp).getHours() +
-                    ":" +
-                    new Date(el.timestamp).getMinutes()}
-                </p>
-              </div>
-{/* 
+              <div className={el.senderID != UserID ? "right-avt" : "left-avt"}>
+                {el.senderID === UserID ? (
+                  <div>
+                    <IconButton
+                      aria-label="more"
+                      id="long-button"
+                      aria-controls={open ? "long-menu" : undefined}
+                      aria-expanded={open ? "true" : undefined}
+                      aria-haspopup="true"
+                      onClick={handleClick}
+                      sx={{ mr: "-20px" }}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                      id="long-menu"
+                      MenuListProps={{
+                        "aria-labelledby": "long-button",
+                      }}
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                    >
+                      <MenuItem
+                        key={"delete"}
+                        onClick={() =>
+                          handleDeleteGroupMessage(el.messageID, el.senderID)
+                        }
+                      >
+                        Delete
+                      </MenuItem>
+                    </Menu>
+                  </div>
+                ) : null}
+
+                <div className={ChatlogicStyling(el.senderID, UserID)}>
+                  <p>{el.messageString}</p>
+                  <p className="time chat-time">
+                    {new Date(el.timestamp).getHours() +
+                      ":" +
+                      new Date(el.timestamp).getMinutes()}
+                  </p>
+                </div>
+                {/* 
               {isSameSender(messages, index) ? (
                 <Avatar
                   // src={el.sender._id != user._id ? el.sender.pic : user.pic}
@@ -247,12 +296,17 @@ export const ChattingPage = () => {
               ) : (
                 <div className="blank-div"></div>
               )} */}
+              </div>
             </div>
-          </div>
+          </>
         ))}
       </div>
       <div className="sender-cont">
-        <InputContWithEmog id={_id} token={token} connection={connection} />
+        <InputContWithEmog
+          senderID={roomData.SenderID}
+          MBID={roomData.MBID}
+          connection={connection}
+        />
       </div>
     </div>
   );
@@ -269,30 +323,15 @@ const ColorButton = styled(Button)(() => ({
     backgroundColor: "#3a45c3",
   },
 }));
-function InputContWithEmog({ id, token, connection }) {
+function InputContWithEmog({ senderID, MBID, connection }) {
   const [text, setText] = useState("");
   const dispatch = useDispatch();
 
   function handleOnEnter(text) {
-
-    dispatch(
-      sendMessageApiAsync(
-        id,
-        "receiverId",
-        text,
-         connection      )
-    );
+    dispatch(sendMessageApiAsync(senderID, MBID, text, connection));
   }
   function handleChatClick() {
-
-    dispatch(
-      sendMessageApiAsync(
-       id,
-       "receiverId",
-       text,
-        connection
-      )
-    );
+    dispatch(sendMessageApiAsync(senderID, MBID, text, connection));
     setText("");
   }
 

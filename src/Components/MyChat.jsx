@@ -11,29 +11,30 @@ import { accessChat, makeRecentChatApi } from "./Redux/RecentChat/action";
 import { selectChat } from "./Redux/Chatting/action";
 import { removeSeenMsg } from "./Redux/Notification/action";
 import { getRoomListAsync } from "./Redux/RecentChat/RecentChatNew/action1";
-import { fetchCurrentMessagesAsync } from "./Redux/Chatting/ChattingNew/action1";
+import {
+  fetchCurrentMessagesAsync,
+  selectRoomData,
+} from "./Redux/Chatting/ChattingNew/action1";
 
 export const MyChat = () => {
-
   const [search, setSearch] = useState(false);
   const { search_result, loading, error } = useSelector(
     (store) => store.search
   );
-  const { recent_chat, loading: chat_loading } = useSelector(
-    (store) => store.recentChat
+  const UserID = localStorage.getItem("UserID");
+  // const { recent_chat, loading: chat_loading } = useSelector(
+  //   (store) => store.recentChat
+  // );
+
+  const recent_chat_one = useSelector(
+    (store) => store?.recentChatOne?.recent_chat
   );
-  const recent_chat_one = useSelector((store) => store?.recentChatOne?.recent_chat) 
   const { user, token } = useSelector((store) => store.user);
   const { chatting } = useSelector((store) => store.chatting);
   const { notification, unseenmsg } = useSelector(
     (store) => store.notification
   );
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getRoomListAsync());
-  }, []);
- 
 
   // const ref = useRef();
   // const handleQuery = (e) => {
@@ -51,18 +52,18 @@ export const MyChat = () => {
   //   };
   // };
 
-// const recent_chat1 = [
-//   {
-//     id: 17,
-//     name: "Lobby",
-//     admin: "admin"
-// },
-// {
-//   id: 18,
-//   name: "Marketing",
-//   admin: "admin"
-// }
-// ]
+  // const recent_chat1 = [
+  //   {
+  //     id: 17,
+  //     name: "Lobby",
+  //     admin: "admin"
+  // },
+  // {
+  //   id: 18,
+  //   name: "Marketing",
+  //   admin: "admin"
+  // }
+  // ]
 
   return (
     <div className="mychat-cont">
@@ -108,17 +109,16 @@ export const MyChat = () => {
                   id={user._id}
                 />
               ))} */}
-              { chat_loading &&
-              recent_chat_one.map((el, index) => (
-                <ChatUserComp
-                  key={el.id}
-                  {...el}
-                  index={index}
-                  roomName={el.name}
-                  admin={el.admin}
-                  id={el.id}
-                />
-              ))}
+          {recent_chat_one?.map((el, index) => (
+            <ChatUserComp
+              key={el.mbid}
+              {...el}
+              index={index}
+              roomName={el.messageBoardName}
+              SenderID={UserID}
+              id={el.mbid}
+            />
+          ))}
         </div>
       </div>
     </div>
@@ -179,6 +179,7 @@ const ChatUserComp = ({
   admin,
   // _id,
   index,
+  SenderID,
   roomName,
 }) => {
   const dispatch = useDispatch();
@@ -193,16 +194,24 @@ const ChatUserComp = ({
     //     chatName,
     //   })
     // );
-    dispatch(fetchCurrentMessagesAsync(id))
+
+    dispatch(fetchCurrentMessagesAsync(roomName));
+    dispatch(
+      selectRoomData({
+        SenderID: SenderID,
+        MBID: id,
+        roomName: roomName,
+      })
+    );
   };
   return (
     <div
       onClick={handleSelectChat}
       // className={chattingwith == _id ? "user selectUser" : "user"}
     >
-      <div >
-      <p className="Recent"># {roomName}</p>
-        
+      <div>
+        <p className="Recent roomName"># {roomName}</p>
+
         {/* {isGroupChat ? (
           <div>{<Avatar>G</Avatar>}</div>
         ) : (

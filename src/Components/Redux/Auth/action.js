@@ -26,7 +26,6 @@ export const authRegister = (url, user) => async (dispatch) => {
   } catch (err) {
     dispatch(authLoading(false));
     dispatch(authError(true));
-    console.log(err.message);
   }
 };
 
@@ -43,11 +42,9 @@ export const uploadPic = (pic) => async (dispatch) => {
       body: profile,
     });
     let data = await res.json();
-    console.log(data);
     dispatch(actionPic(data.secure_url));
   } catch (error) {
     dispatch(authLoading(false));
     dispatch(authError(true));
-    console.log(error.message);
   }
 };

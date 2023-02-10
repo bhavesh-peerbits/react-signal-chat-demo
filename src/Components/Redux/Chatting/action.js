@@ -25,7 +25,6 @@ export const fetchCurrentMessages = (id, token, socket) => async (dispatch) => {
     socket.emit("join chat", id);
     dispatch(addMessage(data));
   } catch (err) {
-    console.log(err);
     dispatch(messageError(true));
   }
 };

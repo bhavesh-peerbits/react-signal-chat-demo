@@ -296,3 +296,6 @@ body {
 svg {
   cursor: pointer;
 }
+.roomName {
+  cursor: pointer;
+}

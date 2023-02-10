@@ -5,6 +5,8 @@ export const CURRENT_MESSAGE_SUCCESS = "CURRENT_MESSAGE_SUCCESS";
 export const CURRENT_MESSAGE_FAIl = "CURRENT_MESSAGE_FAIl";
 
 export const MESSAGE_RECEIVED = "MESSAGE_RECEIVED";
+// set room data
+export const SELECT_ROOM_DATA = "SELECT_ROOM_DATA";
 
 export const currentMessagePending = () => ({ type: CURRENT_MESSAGE_PENDING });
 export const currentMessageSuccess = (payload) => ({
@@ -18,15 +20,25 @@ export const messageReceived = (payload) => ({
   payload,
 });
 
-export const fetchCurrentMessagesAsync = (roomNameId) => async (dispatch) => {
+export const selectRoomData = (payload) => ({
+  type: SELECT_ROOM_DATA,
+  payload,
+});
+
+const BASE_URL = "http://192.168.1.56:81";
+
+export const fetchCurrentMessagesAsync = (boardName) => async (dispatch) => {
   dispatch(currentMessagePending());
-  const url = `http://192.168.1.56:86/api/Messages/Room/${roomNameId}`;
+  const url = `${BASE_URL}/GetMessagesByBoardName`;
   try {
     let res = await axios(url, {
       method: "post",
+      params: {
+        boardName: boardName,
+      },
     });
-    let data = await res.json();
-    //   socket.emit("join chat", id);
+    let data = await res.data;
+    // connection.emit("join chat", id);
     dispatch(currentMessageSuccess(data));
   } catch (err) {
     console.log(err);
@@ -35,14 +47,14 @@ export const fetchCurrentMessagesAsync = (roomNameId) => async (dispatch) => {
 };
 
 export const sendMessageApiAsync =
-  (id, receiverId, message, connection) => async (dispatch) => {
-    const url = `http://192.168.1.56:86/CreateMessage`;
+  (senderID, MBID, message, connection) => async (dispatch) => {
+    const url = `${BASE_URL}/CreateGroupMessage`;
     try {
       let res = await axios(url, {
         method: "POST",
-        body: {
-          SenderID: id,
-          ReceiverID: receiverId,
+        params: {
+          SenderID: senderID,
+          MBID: MBID,
           MessageString: message,
         },
         // headers: {
@@ -50,9 +62,27 @@ export const sendMessageApiAsync =
         //   Authorization: `Bearer ${token}`,
         // },
       });
-      let data = await res.json();
-      connection.invoke("newMessage", data);
+      let data = await res.data;
+      connection.invoke("addMessageBoardMessage", data);
       dispatch(messageReceived(data));
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+export const deleteGroupMessageAsync =
+  (messageId, senderId, connection) => async (dispatch) => {
+    const url = `${BASE_URL}/DeleteGroupMessage`;
+    try {
+      let res = await axios(url, {
+        method: "DELETE",
+        params: {
+          messageID: messageId,
+          userID: senderId,
+        },
+      });
+      let data = await res.data;
+      connection.invoke("removeMessageBoardMessage", messageId);
     } catch (err) {
       console.log(err.message);
     }
