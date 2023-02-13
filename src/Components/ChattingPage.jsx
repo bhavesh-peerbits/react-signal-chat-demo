@@ -28,7 +28,7 @@ export const ChattingPage = () => {
   const { messages, roomData, chatting } = useSelector(
     (store) => store.chattingOne
   );
-  console.log("messages", messages);
+
   const UserID = localStorage.getItem("UserID");
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -42,117 +42,7 @@ export const ChattingPage = () => {
     dispatch(deleteGroupMessageAsync(messageId, senderId));
     setAnchorEl(null);
   };
-  //   const messages = [
-  //     {
-  //         id: 18,
-  //         content: "Hello guys, how are you doing?",
-  //         timestamp: "2023-02-09T05:29:06.4955229+00:00",
-  //         fromUserName: "admin2",
-  //         fromFullName: "Maria Nikolaou",
-  //         room: "Lobby",
-  //         avatar: "avatar2.jpg"
-  //     },
-  //     {
-  //         id: 19,
-  //         content: "Good, and you?",
-  //         timestamp: "2023-02-09T05:29:07.4955229+00:00",
-  //         fromUserName: "admin",
-  //         fromFullName: "James Smith",
-  //         room: "Lobby",
-  //         avatar: "avatar1.jpg"
-  //     },
-  //     {
-  //         id: 20,
-  //         content: "I'm good ",
-  //         timestamp: "2023-02-09T05:29:08.4955229+00:00",
-  //         fromUserNam: "admin2",
-  //         fromFullName: "Maria Nikolaou",
-  //     room: "Lobby",
-  //         avatar: "avatar2.jpg"
-  //     },
-  //      {
-  //         id: 21,
-  //         content: "Where are you",
-  //         timestamp: "2023-02-09T05:29:09.4955229+00:00",
-  //         fromUserName: "admin",
-  //         fromFullName: "James Smith",
-  //         room: "Lobby",
-  //         avatar: "avatar1.jpg"
-  //     },
-  //      {
-  //         id: 22,
-  //         content: "At coffee shop",
-  //         timestamp: "2023-02-09T05:29:15.4955229+00:00",
-  //         fromUserName: "admin2",
-  //         fromFullName: "Maria Nikolaou",
-  //         room: "Lobby",
-  //         avatar: "avatar2.jpg"
-  //     },
-  //       {
-  //         id: 23,
-  //         content: "ohh great",
-  //         timestamp: "2023-02-09T05:29:16.4955229+00:00",
-  //         fromUserName: "admin",
-  //         fromFullName: "James Smith",
-  //         room: "Lobby",
-  //         avatar: "avatar1.jpg"
-  //     },
-  //     {
-  //       id: 24,
-  //       content: "Hello guys, how are you doing?",
-  //       timestamp: "2023-02-09T05:29:06.4955229+00:00",
-  //       fromUserName: "admin2",
-  //       fromFullName: "Maria Nikolaou",
-  //       room: "Lobby",
-  //       avatar: "avatar2.jpg"
-  //   },
-  //   {
-  //       id: 25,
-  //       content: "Good, and you?",
-  //       timestamp: "2023-02-09T05:29:07.4955229+00:00",
-  //       fromUserName: "admin",
-  //       fromFullName: "James Smith",
-  //       room: "Lobby",
-  //       avatar: "avatar1.jpg"
-  //   },
-  //   {
-  //       id: 26,
-  //       content: "I'm good ",
-  //       timestamp: "2023-02-09T05:29:08.4955229+00:00",
-  //       fromUserNam: "admin2",
-  //       fromFullName: "Maria Nikolaou",
-  //   room: "Lobby",
-  //       avatar: "avatar2.jpg"
-  //   },
-  //    {
-  //       id: 27,
-  //       content: "Where are you",
-  //       timestamp: "2023-02-09T05:29:09.4955229+00:00",
-  //       fromUserName: "admin",
-  //       fromFullName: "James Smith",
-  //       room: "Lobby",
-  //       avatar: "avatar1.jpg"
-  //   },
-  //    {
-  //       id: 28,
-  //       content: "At coffee shop",
-  //       timestamp: "2023-02-09T05:29:15.4955229+00:00",
-  //       fromUserName: "admin2",
-  //       fromFullName: "Maria Nikolaou",
-  //       room: "Lobby",
-  //       avatar: "avatar2.jpg"
-  //   },
-  //     {
-  //       id: 29,
-  //       content: "ohh great",
-  //       timestamp: "2023-02-09T05:29:16.4955229+00:00",
-  //       fromUserName: "admin",
-  //       fromFullName: "James Smith",
-  //       room: "Lobby",
-  //       avatar: "avatar1.jpg"
-  //   }
 
-  // ]
   var { unseenmsg } = useSelector((store) => store.notification);
   const {
     chatting: {

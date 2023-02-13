@@ -5,6 +5,8 @@ export const CURRENT_MESSAGE_SUCCESS = "CURRENT_MESSAGE_SUCCESS";
 export const CURRENT_MESSAGE_FAIl = "CURRENT_MESSAGE_FAIl";
 
 export const MESSAGE_RECEIVED = "MESSAGE_RECEIVED";
+export const DELETE_MESSAGE = "DELETE_MESSAGE";
+
 // set room data
 export const SELECT_ROOM_DATA = "SELECT_ROOM_DATA";
 
@@ -17,6 +19,11 @@ export const currentMessageFail = () => ({ type: CURRENT_MESSAGE_FAIl });
 
 export const messageReceived = (payload) => ({
   type: MESSAGE_RECEIVED,
+  payload,
+});
+
+export const deleteMessage = (payload) => ({
+  type: DELETE_MESSAGE,
   payload,
 });
 
@@ -62,9 +69,17 @@ export const sendMessageApiAsync =
         //   Authorization: `Bearer ${token}`,
         // },
       });
-      let data = await res.data;
-      connection.invoke("addMessageBoardMessage", data);
-      dispatch(messageReceived(data));
+      let data = await res.data.data;
+      const payload = {
+        messageID: data._id,
+        senderID: data.senderID,
+        mbid: data.mbid,
+        messageString: data.messageString,
+        timestamp: data.timestamp,
+        replyOf: null,
+      };
+      // connection.invoke("addMessageBoardMessage", data);
+      dispatch(messageReceived(payload));
       dispatch(fetchCurrentMessagesAsync("test-room"));
     } catch (err) {
       console.log(err.message);
@@ -83,9 +98,11 @@ export const deleteGroupMessageAsync =
           userID: senderId,
         },
       });
-      let data = await res.data;
+      let data = await res.data.data;
+
+      dispatch(deleteMessage(data));
       // connection.invoke("removeMessageBoardMessage", messageId);
-      dispatch(fetchCurrentMessagesAsync("test-room"));
+      // dispatch(fetchCurrentMessagesAsync("test-room"));
     } catch (err) {
       console.log(err.message);
     }
