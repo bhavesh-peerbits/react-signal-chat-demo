@@ -65,6 +65,7 @@ export const sendMessageApiAsync =
       let data = await res.data;
       connection.invoke("addMessageBoardMessage", data);
       dispatch(messageReceived(data));
+      dispatch(fetchCurrentMessagesAsync("test-room"));
     } catch (err) {
       console.log(err.message);
     }
@@ -73,6 +74,7 @@ export const sendMessageApiAsync =
 export const deleteGroupMessageAsync =
   (messageId, senderId, connection) => async (dispatch) => {
     const url = `${BASE_URL}/DeleteGroupMessage`;
+    console.log(messageId, "messageId");
     try {
       let res = await axios(url, {
         method: "DELETE",
@@ -82,7 +84,8 @@ export const deleteGroupMessageAsync =
         },
       });
       let data = await res.data;
-      connection.invoke("removeMessageBoardMessage", messageId);
+      // connection.invoke("removeMessageBoardMessage", messageId);
+      dispatch(fetchCurrentMessagesAsync("test-room"));
     } catch (err) {
       console.log(err.message);
     }
