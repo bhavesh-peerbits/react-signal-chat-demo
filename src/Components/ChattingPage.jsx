@@ -18,6 +18,7 @@ import {
   sendMessageApiAsync,
 } from "./Redux/Chatting/ChattingNew/action1";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import UserImg from "../Components/Auth/profileimg.png";
 
 export const ChattingPage = () => {
   const [connection, setConnection] = useState(null);
@@ -186,6 +187,14 @@ export const ChattingPage = () => {
                           new Date(el.timestamp).getMinutes()}
                       </p>
                     </div>
+                    <Avatar
+                      src={el.senderID != UserID ? "" : UserImg}
+                      // src={
+                      //   el.fromUserName != "admin2"
+                      //     ? "el.sender.pic"
+                      //     : "user.pic"
+                      // }
+                    />
                     {/* 
               {isSameSender(messages, index) ? (
                 <Avatar
