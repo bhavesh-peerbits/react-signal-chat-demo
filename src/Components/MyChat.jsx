@@ -196,6 +196,7 @@ const ChatUserComp = ({
     // );
 
     dispatch(fetchCurrentMessagesAsync(roomName));
+
     dispatch(
       selectRoomData({
         SenderID: SenderID,

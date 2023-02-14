@@ -21,6 +21,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 export const ChattingPage = () => {
   const [connection, setConnection] = useState(null);
+  const [messageObj, setMessageObj] = useState();
   const [chat, setChat] = useState([]);
   const latestChat = useRef(null);
   const { user, token } = useSelector((store) => store.user);
@@ -32,26 +33,29 @@ export const ChattingPage = () => {
   const UserID = localStorage.getItem("UserID");
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
+  const handleClick = (event, el) => {
     setAnchorEl(event.currentTarget);
+    setMessageObj(el);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleDeleteGroupMessage = (messageId, senderId) => {
-    dispatch(deleteGroupMessageAsync(messageId, senderId));
+  const handleDeleteGroupMessage = (el) => {
+    dispatch(
+      deleteGroupMessageAsync(messageObj.messageID, messageObj.senderID)
+    );
     setAnchorEl(null);
   };
 
   var { unseenmsg } = useSelector((store) => store.notification);
-  const {
-    chatting: {
-      isGroupChat,
-      chatName,
-      // user: { pic, name },
-      _id,
-    },
-  } = useSelector((store) => store.chatting);
+  // const {
+  //   chatting: {
+  //     isGroupChat,
+  //     chatName,
+  //     // user: { pic, name },
+  //     _id,
+  //   },
+  // } = useSelector((store) => store.chatting);
   const scrolldiv = createRef();
   const dispatch = useDispatch();
   // useEffect(() => {
@@ -113,7 +117,7 @@ export const ChattingPage = () => {
     <div className="chattingpage">
       <div className="top-header">
         <div className="user-header">
-          <Avatar src={isGroupChat ? "" : "pic"} />
+          <Avatar />
           <p className="user-name">{roomData?.roomName || ""}</p>
         </div>
         <div>
@@ -126,58 +130,63 @@ export const ChattingPage = () => {
         </div>
       </div>
       <div ref={scrolldiv} className="live-chat">
-        {chatting?.map((el, index) => (
-          <>
-            <div
-              key={index}
-              className={
-                el.senderID != UserID ? "rihgtuser-chat" : "leftuser-chat"
-              }
-            >
-              <div className={el.senderID != UserID ? "right-avt" : "left-avt"}>
-                {el.senderID === UserID ? (
-                  <div>
-                    <IconButton
-                      aria-label="more"
-                      id="long-button"
-                      aria-controls={open ? "long-menu" : undefined}
-                      aria-expanded={open ? "true" : undefined}
-                      aria-haspopup="true"
-                      onClick={handleClick}
-                      sx={{ mr: "-20px" }}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                      id="long-menu"
-                      MenuListProps={{
-                        "aria-labelledby": "long-button",
-                      }}
-                      anchorEl={anchorEl}
-                      open={open}
-                      onClose={handleClose}
-                    >
-                      <MenuItem
-                        key={"delete"}
-                        onClick={() =>
-                          handleDeleteGroupMessage(el.messageID, el.senderID)
-                        }
-                      >
-                        Delete
-                      </MenuItem>
-                    </Menu>
-                  </div>
-                ) : null}
+        {chatting?.length > 0
+          ? chatting?.map((el, index) => (
+              <>
+                <div
+                  key={index}
+                  className={
+                    el.senderID != UserID ? "rihgtuser-chat" : "leftuser-chat"
+                  }
+                >
+                  <div
+                    className={el.senderID != UserID ? "right-avt" : "left-avt"}
+                  >
+                    {el.senderID === UserID ? (
+                      <div>
+                        <IconButton
+                          aria-label="more"
+                          id="long-button"
+                          aria-controls={open ? "long-menu" : undefined}
+                          aria-expanded={open ? "true" : undefined}
+                          aria-haspopup="true"
+                          onClick={(e) => handleClick(e, el)}
+                          sx={{ mr: "-20px" }}
+                        >
+                          <MoreVertIcon />
+                        </IconButton>
 
-                <div className={ChatlogicStyling(el.senderID, UserID)}>
-                  <p>{el.messageString}</p>
-                  <p className="time chat-time">
-                    {new Date(el.timestamp).getHours() +
-                      ":" +
-                      new Date(el.timestamp).getMinutes()}
-                  </p>
-                </div>
-                {/* 
+                        <Menu
+                          id="long-menu"
+                          MenuListProps={{
+                            "aria-labelledby": "long-button",
+                          }}
+                          anchorEl={anchorEl}
+                          open={open}
+                          onClose={handleClose}
+                          onClick={handleDeleteGroupMessage}
+                        >
+                          <MenuItem
+                            key={"delete"}
+                            // onClick={() => {
+                            //   handleDeleteGroupMessage(el);
+                            // }}
+                          >
+                            Delete
+                          </MenuItem>
+                        </Menu>
+                      </div>
+                    ) : null}
+
+                    <div className={ChatlogicStyling(el.senderID, UserID)}>
+                      <p>{el.messageString}</p>
+                      <p className="time chat-time">
+                        {new Date(el.timestamp).getHours() +
+                          ":" +
+                          new Date(el.timestamp).getMinutes()}
+                      </p>
+                    </div>
+                    {/* 
               {isSameSender(messages, index) ? (
                 <Avatar
                   // src={el.sender._id != user._id ? el.sender.pic : user.pic}
@@ -186,10 +195,11 @@ export const ChattingPage = () => {
               ) : (
                 <div className="blank-div"></div>
               )} */}
-              </div>
-            </div>
-          </>
-        ))}
+                  </div>
+                </div>
+              </>
+            ))
+          : null}
       </div>
       <div className="sender-cont">
         <InputContWithEmog

@@ -14,7 +14,9 @@ export const HomeComp = () => {
   // const { chatting } = useSelector((store) => store.chatting);
 
   // const { messages }= useSelector((store) => store.chattingOne);
-  const { chatting, messages } = useSelector((store) => store.chattingOne);
+  const { chatting, messages, roomData } = useSelector(
+    (store) => store.chattingOne
+  );
 
   // if (!user._id) {
   //   return <Navigate to="/register" />;
@@ -27,7 +29,7 @@ export const HomeComp = () => {
       {/* <SideNavbar /> */}
       <MyChat />
       {/* {chatting._id ? <ChattingPage /> : <MessageStarter {...user} />} */}
-      {chatting?.length > 0 ? <ChattingPage /> : <MessageStarter {...user} />}
+      {roomData?.MBID != "" ? <ChattingPage /> : <MessageStarter {...user} />}
     </div>
   );
 };
