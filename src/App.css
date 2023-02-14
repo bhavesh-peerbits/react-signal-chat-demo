@@ -230,9 +230,11 @@ body {
 .leftuser-chat {
   display: flex;
   flex-direction: row-reverse;
+  margin-top: 6px;
 }
 .rihgtuser-chat {
   display: flex;
+  margin-top: 6px;
 }
 .right-avt {
   /* border: 2px solid red; */
@@ -254,7 +256,7 @@ body {
   margin: 3px;
 }
 .right-msg {
-  background-color: #f5f7fb;
+  background-color: #ebebeb;
   padding: 8px;
   border-radius: 10px;
   margin: 3px;
